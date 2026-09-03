@@ -1,10 +1,10 @@
 using PlaywrightDotNetBookingApiAutomation.Models;
 
-namespace PlaywrightDotNetBookingApiAutomation.Helpers;
+namespace PlaywrightDotNetBookingApiAutomation.TestData;
 
-public static class TestDataHelper
+public static class BookingTestData
 {
-    public static BookingRequest BuildBookingRequest(
+    public static BookingRequest CreateBooking(
         string? firstName = null,
         string? lastName = null,
         int? totalPrice = null,
@@ -13,6 +13,8 @@ public static class TestDataHelper
         string? checkOut = null,
         string? additionalNeeds = null)
     {
+        var bookingDate = DateTime.UtcNow.Date.AddDays(7);
+
         return new BookingRequest
         {
             firstname = firstName ?? $"Test-{Guid.NewGuid():N}",
@@ -21,8 +23,8 @@ public static class TestDataHelper
             depositpaid = depositPaid ?? true,
             bookingdates = new BookingDates
             {
-                checkin = checkIn ?? "2026-09-10",
-                checkout = checkOut ?? "2026-09-15"
+                checkin = checkIn ?? bookingDate.ToString("yyyy-MM-dd"),
+                checkout = checkOut ?? bookingDate.AddDays(5).ToString("yyyy-MM-dd")
             },
             additionalneeds = additionalNeeds ?? "Breakfast"
         };

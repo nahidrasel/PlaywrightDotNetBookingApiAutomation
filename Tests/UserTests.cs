@@ -4,6 +4,7 @@ using PlaywrightDotNetBookingApiAutomation.Api;
 using PlaywrightDotNetBookingApiAutomation.Fixtures;
 using PlaywrightDotNetBookingApiAutomation.Helpers;
 using PlaywrightDotNetBookingApiAutomation.Models;
+using PlaywrightDotNetBookingApiAutomation.TestData;
 
 namespace PlaywrightDotNetBookingApiAutomation.Tests;
 
@@ -22,8 +23,7 @@ public class UsersTests : BaseTest
     [Fact]
     public async Task GetBooking_ShouldReturnCorrectBooking()
     {
-        var request = TestDataHelper.BuildBookingRequest(
-            firstName: $"Get-{Guid.NewGuid():N}",
+        var request = BookingTestData.CreateBooking(
             lastName: "Booking",
             totalPrice: 180,
             additionalNeeds: "Lunch");
@@ -61,8 +61,7 @@ public class UsersTests : BaseTest
     [Fact]
     public async Task CreateBooking_ShouldReturn200()
     {
-        var request = TestDataHelper.BuildBookingRequest(
-            firstName: $"Create-{Guid.NewGuid():N}",
+        var request = BookingTestData.CreateBooking(
             lastName: "Automation",
             totalPrice: 200,
             additionalNeeds: "Dinner");
@@ -80,8 +79,7 @@ public class UsersTests : BaseTest
     [Fact]
     public async Task UpdateBooking_ShouldReturn200()
     {
-        var createRequest = TestDataHelper.BuildBookingRequest(
-            firstName: $"Update-{Guid.NewGuid():N}",
+        var createRequest = BookingTestData.CreateBooking(
             lastName: "Before",
             totalPrice: 150,
             additionalNeeds: "Breakfast");
@@ -93,7 +91,7 @@ public class UsersTests : BaseTest
         created.Should().NotBeNull();
         created!.bookingid.Should().BeGreaterThan(0);
 
-        var updateRequest = TestDataHelper.BuildBookingRequest(
+        var updateRequest = BookingTestData.CreateBooking(
             firstName: "Updated",
             lastName: "Guest",
             totalPrice: 250,
@@ -105,20 +103,19 @@ public class UsersTests : BaseTest
 
         if (response.Status == 200)
         {
-            var result = await ResponseAssertions.ReadJsonAsync<BookingResponse>(response);
+            var result = await ResponseAssertions.ReadJsonAsync<BookingDetails>(response);
 
             result.Should().NotBeNull();
-            result!.booking.firstname.Should().Be(updateRequest.firstname);
-            result.booking.lastname.Should().Be(updateRequest.lastname);
-            result.booking.totalprice.Should().Be(updateRequest.totalprice);
+            result!.firstname.Should().Be(updateRequest.firstname);
+            result.lastname.Should().Be(updateRequest.lastname);
+            result.totalprice.Should().Be(updateRequest.totalprice);
         }
     }
 
     [Fact]
     public async Task DeleteBooking_ShouldReturn201()
     {
-        var request = TestDataHelper.BuildBookingRequest(
-            firstName: $"Delete-{Guid.NewGuid():N}",
+        var request = BookingTestData.CreateBooking(
             lastName: "Booking",
             totalPrice: 320,
             additionalNeeds: "Spa");
