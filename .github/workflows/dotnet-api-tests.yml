@@ -1,0 +1,92 @@
+name: .NET API Tests
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    env:
+      APP_API_BASE_URL: ""
+      APP_USERNAME: ${{ secrets.APP_USERNAME || 'admin' }}
+      APP_PASSWORD: ${{ secrets.APP_PASSWORD || 'password123' }}
+      APP_TIMEOUTMS: ${{ vars.API_TIMEOUT_MS || '30000' }}
+      APP_USE_TESTCONTAINERS: "true"
+      APP_TESTCONTAINERS_IMAGE: "docker.io/markwinteringham/restful-booker:latest"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Run full test suite
+        id: full-suite
+        continue-on-error: true
+        run: dotnet test --no-restore --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Rerun failed tests once
+        if: steps.full-suite.outcome == 'failure'
+        shell: pwsh
+        run: |
+          [xml]$results = Get-Content TestResults/test-results.trx
+          $failedTests = @(
+            $results.SelectNodes("//*[local-name()='UnitTestResult'][@outcome='Failed']") |
+              ForEach-Object { $_.testName } |
+              Sort-Object -Unique
+          )
+
+          if ($failedTests.Count -eq 0) {
+            throw 'The full test suite failed, but no failed test names were found in the TRX file.'
+          }
+
+          $rerunFailures = 0
+          for ($index = 0; $index -lt $failedTests.Count; $index++) {
+            $testName = $failedTests[$index]
+            Write-Host "Rerunning failed test once: $testName"
+            dotnet test --no-restore --filter "FullyQualifiedName~$testName" --logger "trx;LogFileName=rerun-$index.trx" --results-directory TestResults
+            if ($LASTEXITCODE -ne 0) {
+              $rerunFailures++
+            }
+          }
+
+          if ($rerunFailures -gt 0) {
+            Write-Error "$rerunFailures test(s) still failed after one rerun."
+          }
+
+      - name: Publish test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: .NET API Tests
+          path: 'TestResults/**/*.trx'
+          reporter: dotnet-trx
+          fail-on-error: false
+
+      - name: Upload test results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: TestResults/
+          if-no-files-found: warn
