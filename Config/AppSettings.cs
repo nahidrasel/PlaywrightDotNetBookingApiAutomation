@@ -37,14 +37,14 @@ public static class AppSettings
         return values;
     });
 
-    public static string ApiBaseUrl => GetValue("ApiBaseUrl", "https://restful-booker.herokuapp.com");
-    public static string Username => GetValue("Username", "admin");
-    public static string Password => GetValue("Password", "password123");
-    public static int TimeoutMs => int.TryParse(GetValue("TimeoutMs", "30000"), out var value) ? value : 30000;
-    public static bool UseTestcontainers => bool.TryParse(GetValue("UseTestcontainers", "false"), out var value) && value;
-    public static string TestcontainersImage => GetValue("TestcontainersImage", "docker.io/markwinteringham/restful-booker:latest");
+    public static string ApiBaseUrl => GetValue("ApiBaseUrl");
+    public static string Username => GetValue("Username");
+    public static string Password => GetValue("Password");
+    public static int TimeoutMs => ParseInt("TimeoutMs");
+    public static bool UseTestcontainers => ParseBool("UseTestcontainers");
+    public static string TestcontainersImage => GetValue("TestcontainersImage");
 
-    private static string GetValue(string key, string defaultValue)
+    private static string GetValue(string key)
     {
         var canonicalKey = CanonicalizeKey(key);
         var settings = Settings.Value;
@@ -54,7 +54,23 @@ public static class AppSettings
             return value;
         }
 
-        return defaultValue;
+        throw new InvalidOperationException($"Required configuration value '{key}' was not found in appsettings.json or environment variables.");
+    }
+
+    private static int ParseInt(string key)
+    {
+        var value = GetValue(key);
+        return int.TryParse(value, out var parsedValue)
+            ? parsedValue
+            : throw new InvalidOperationException($"Configuration value '{key}' must be a valid integer.");
+    }
+
+    private static bool ParseBool(string key)
+    {
+        var value = GetValue(key);
+        return bool.TryParse(value, out var parsedValue)
+            ? parsedValue
+            : throw new InvalidOperationException($"Configuration value '{key}' must be true or false.");
     }
 
     private static string CanonicalizeKey(string key)
