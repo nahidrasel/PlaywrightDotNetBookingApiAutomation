@@ -1,7 +1,7 @@
 using Microsoft.Playwright;
 using NUnit.Framework;
 
-namespace PlaywrightDotNetApiAutomation.Fixtures;
+namespace PlaywrightDotNetBookingApiAutomation.Fixtures;
 
 public abstract class BaseTest
 {

@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <AssemblyName>PlaywrightDotNetBookingApiAutomation</AssemblyName>
+    <RootNamespace>PlaywrightDotNetBookingApiAutomation</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

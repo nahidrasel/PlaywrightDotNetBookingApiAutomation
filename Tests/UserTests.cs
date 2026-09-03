@@ -1,8 +1,8 @@
 using FluentAssertions;
-using PlaywrightDotNetApiAutomation.Fixtures;
 using NUnit.Framework;
+using PlaywrightDotNetBookingApiAutomation.Fixtures;
 
-namespace PlaywrightDotNetApiAutomation.Tests;
+namespace PlaywrightDotNetBookingApiAutomation.Tests;
 
 [TestFixture]
 public class UsersTests : BaseTest
