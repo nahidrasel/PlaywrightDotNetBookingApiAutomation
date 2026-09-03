@@ -21,11 +21,11 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     env:
-      APP_API_BASE_URL: ""
+      APP_API_BASE_URL: "https://restful-booker.herokuapp.com"
       APP_USERNAME: ${{ secrets.APP_USERNAME || 'admin' }}
       APP_PASSWORD: ${{ secrets.APP_PASSWORD || 'password123' }}
       APP_TIMEOUTMS: ${{ vars.API_TIMEOUT_MS || '30000' }}
-      APP_USE_TESTCONTAINERS: "true"
+      APP_USE_TESTCONTAINERS: "false"
       APP_TESTCONTAINERS_IMAGE: "docker.io/markwinteringham/restful-booker:latest"
 
     steps:
