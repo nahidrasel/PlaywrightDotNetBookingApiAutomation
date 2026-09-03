@@ -1,0 +1,47 @@
+## ==========================================
+## Playwright Specific Outputs
+## ==========================================
+# Playwright test results, execution traces, and attachments
+[Tt]est[Rr]esults/
+[Tt]est-[Rr]esults/
+[Rr]eport/
+[Pp]laywright-[Rr]eport/
+
+# Playwright local browser cache (if running local binaries)
+.playwright/
+
+# CRITICAL: Playwright local auth sessions and tokens
+# Used if you save API context/cookies locally to avoid re-authenticating
+playwright/.auth/
+.auth/
+
+## ==========================================
+## .NET / Visual Studio / C# Outputs
+## ==========================================
+# Build results and binaries
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / VS Code working directories
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## ==========================================
+## Secrets & Environment Configuration
+## ==========================================
+# Application secrets, API keys, and local test environment variables
+*.env
+*.env.local
+*.env.*.local
+appsettings.Development.json
+appsettings.Local.json
