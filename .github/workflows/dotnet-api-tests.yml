@@ -9,10 +9,16 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   api-tests:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    permissions:
+      contents: read
+      checks: write
 
     strategy:
       fail-fast: false
@@ -22,6 +28,7 @@ jobs:
 
     env:
       APP_API_BASE_URL: "https://restful-booker.herokuapp.com"
+      # Public demo-only credentials. Override with repository secrets for a private test environment.
       APP_USERNAME: ${{ secrets.APP_USERNAME || 'admin' }}
       APP_PASSWORD: ${{ secrets.APP_PASSWORD || 'password123' }}
       APP_TIMEOUTMS: ${{ vars.API_TIMEOUT_MS || '30000' }}
@@ -30,10 +37,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
@@ -76,7 +83,7 @@ jobs:
 
       - name: Publish test report
         if: always()
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         with:
           name: .NET API Tests
           path: 'TestResults/**/*.trx'
@@ -85,8 +92,9 @@ jobs:
 
       - name: Upload test results artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.os }}
           path: TestResults/
           if-no-files-found: warn
+          retention-days: 14
