@@ -36,7 +36,9 @@ docker-compose.yml  optional local service configuration
 
 ## Configuration and credentials
 
-Review `Config/appsettings.json` and `Config/AppSettings.cs` before changing the target environment. CI supplies API configuration through environment variables, including `APP_API_BASE_URL`, `APP_USERNAME`, `APP_PASSWORD`, and `APP_TIMEOUTMS`. The demo service uses public sample credentials in the current workflow; do not reuse those values for real systems or commit private credentials.
+Review `Config/appsettings.json` and `Config/AppSettings.cs` before changing the target environment. CI supplies API configuration through environment variables, including `APP_API_BASE_URL`, `APP_USERNAME`, `APP_PASSWORD`, and `APP_TIMEOUTMS`.
+
+The tracked username/password values and the workflow fallback values are public demo-only credentials for the hosted sample service. They are not secrets, must not be reused for real systems, and must be replaced with repository secrets for a private test environment. Never commit production credentials, tokens, customer data, or private environment configuration. The repository's ignore rules exclude common local environment and build outputs, but ignore rules do not remove files that have already been committed.
 
 ## Notes
 
